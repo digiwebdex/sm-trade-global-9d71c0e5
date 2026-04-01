@@ -242,8 +242,8 @@ export default function DocumentPreview(props: DocumentPreviewProps) {
                     <td style={{ padding: '6px 8px', fontSize: '12px' }}>{item.itemName}{item.details && <><br/><span style={{ fontSize: '10px', color: '#666' }}>{item.details}</span></>}</td>
                     <td style={{ padding: '6px 8px', textAlign: 'center', fontSize: '12px' }}>{item.size}</td>
                     <td style={{ padding: '6px 8px', textAlign: 'center', fontSize: '12px' }}>{item.unit}</td>
-                    <td style={{ padding: '6px 8px', textAlign: 'center', fontSize: '12px' }}>{formatNumber(item.deliveryQty)}</td>
-                    <td style={{ padding: '6px 8px', textAlign: 'center', fontSize: '12px' }}>{formatNumber(item.balanceQty)}</td>
+                    <td style={{ padding: '6px 8px', textAlign: 'center', fontSize: '12px' }}>{formatPlain(item.deliveryQty)}</td>
+                    <td style={{ padding: '6px 8px', textAlign: 'center', fontSize: '12px' }}>{formatPlain(item.balanceQty)}</td>
                   </tr>
                 ))}
                 {(() => {
