@@ -38,6 +38,13 @@ const formatNumber = (num: number | string) => {
   return n.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 };
 
+const formatPlain = (num: number | string) => {
+  const n = typeof num === 'string' ? parseFloat(num) : num;
+  if (isNaN(n)) return '0';
+  if (Number.isInteger(n)) return n.toString();
+  return n.toFixed(2);
+};
+
 const formatDate = (dateStr: string) => {
   try {
     const d = new Date(dateStr);
@@ -235,8 +242,8 @@ export default function DocumentPreview(props: DocumentPreviewProps) {
                     <td style={{ padding: '6px 8px', fontSize: '12px' }}>{item.itemName}{item.details && <><br/><span style={{ fontSize: '10px', color: '#666' }}>{item.details}</span></>}</td>
                     <td style={{ padding: '6px 8px', textAlign: 'center', fontSize: '12px' }}>{item.size}</td>
                     <td style={{ padding: '6px 8px', textAlign: 'center', fontSize: '12px' }}>{item.unit}</td>
-                    <td style={{ padding: '6px 8px', textAlign: 'center', fontSize: '12px' }}>{formatNumber(item.deliveryQty)}</td>
-                    <td style={{ padding: '6px 8px', textAlign: 'center', fontSize: '12px' }}>{formatNumber(item.balanceQty)}</td>
+                    <td style={{ padding: '6px 8px', textAlign: 'center', fontSize: '12px' }}>{formatPlain(item.deliveryQty)}</td>
+                    <td style={{ padding: '6px 8px', textAlign: 'center', fontSize: '12px' }}>{formatPlain(item.balanceQty)}</td>
                   </tr>
                 ))}
                 {(() => {
@@ -244,8 +251,8 @@ export default function DocumentPreview(props: DocumentPreviewProps) {
                   return (
                     <tr style={{ backgroundColor: NAVY }}>
                       <td colSpan={4} style={{ padding: '8px', textAlign: 'right', fontWeight: 'bold', color: 'white', fontSize: '12px' }}>Total Quantity</td>
-                      <td style={{ padding: '8px', textAlign: 'center', fontWeight: 'bold', color: 'white', fontSize: '12px' }}>{formatNumber(totalQuantity || 0)} Pcs</td>
-                      <td style={{ padding: '8px', textAlign: 'center', fontWeight: 'bold', color: 'white', fontSize: '12px' }}>{formatNumber(totalBalance)} Pcs</td>
+                      <td style={{ padding: '8px', textAlign: 'center', fontWeight: 'bold', color: 'white', fontSize: '12px' }}>{formatPlain(totalQuantity || 0)} Pcs</td>
+                      <td style={{ padding: '8px', textAlign: 'center', fontWeight: 'bold', color: 'white', fontSize: '12px' }}>{formatPlain(totalBalance)} Pcs</td>
                     </tr>
                   );
                 })()}
@@ -266,8 +273,8 @@ export default function DocumentPreview(props: DocumentPreviewProps) {
                   {items.map((item) => (
                     <tr key={item.id} style={{ borderBottom: '1px solid #e8e8e8' }}>
                       <td style={{ padding: '7px 8px', fontSize: '12px' }}>{item.description}</td>
-                      <td style={{ padding: '7px 8px', textAlign: 'center', fontSize: '12px' }}>{formatNumber(item.quantity)}</td>
-                      <td style={{ padding: '7px 8px', textAlign: 'center', fontSize: '12px' }}>{formatNumber(item.unitPrice)}</td>
+                      <td style={{ padding: '7px 8px', textAlign: 'center', fontSize: '12px' }}>{formatPlain(item.quantity)}</td>
+                      <td style={{ padding: '7px 8px', textAlign: 'center', fontSize: '12px' }}>{formatPlain(item.unitPrice)}</td>
                       <td style={{ padding: '7px 8px', textAlign: 'right', fontSize: '12px', fontWeight: 'bold' }}>{formatNumber(item.total)}</td>
                     </tr>
                   ))}
