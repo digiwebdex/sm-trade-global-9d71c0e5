@@ -38,6 +38,13 @@ const formatNumber = (num: number | string) => {
   return n.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 };
 
+const formatPlain = (num: number | string) => {
+  const n = typeof num === 'string' ? parseFloat(num) : num;
+  if (isNaN(n)) return '0';
+  if (Number.isInteger(n)) return n.toString();
+  return n.toFixed(2);
+};
+
 const formatDate = (dateStr: string) => {
   try {
     const d = new Date(dateStr);
