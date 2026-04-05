@@ -266,7 +266,7 @@ export default function DocumentPreview(props: DocumentPreviewProps) {
             <>
               <table style={{ width: '100%', borderCollapse: 'collapse', position: 'relative', zIndex: 1 }}>
                 <thead>
-                  <tr style={{ borderBottom: `2px solid ${NAVY}` }}>
+                  <tr style={{ borderBottom: '2px solid #999' }}>
                     <th style={{ padding: '8px 8px', textAlign: 'left', fontSize: '11px', fontWeight: 'bold', color: '#888', textTransform: 'uppercase', width: '40%' }}>DESCRIPTION</th>
                     <th style={{ padding: '8px 8px', textAlign: 'center', fontSize: '11px', fontWeight: 'bold', color: '#888', textTransform: 'uppercase', width: '18%' }}>QTY</th>
                     <th style={{ padding: '8px 8px', textAlign: 'center', fontSize: '11px', fontWeight: 'bold', color: '#888', textTransform: 'uppercase', width: '22%' }}>UNIT PRICE</th>
