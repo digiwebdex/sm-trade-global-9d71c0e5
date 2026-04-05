@@ -230,7 +230,7 @@ export default function DocumentPreview(props: DocumentPreviewProps) {
           {isChallan && challanItems ? (
             <table style={{ width: '100%', borderCollapse: 'collapse', position: 'relative', zIndex: 1 }}>
               <thead>
-                <tr style={{ borderBottom: `2px solid ${NAVY}` }}>
+                <tr style={{ borderBottom: '2px solid #999' }}>
                   <th style={{ padding: '8px 6px', textAlign: 'center', fontSize: '11px', fontWeight: 'bold', color: NAVY, whiteSpace: 'nowrap' }}>SL.</th>
                   <th style={{ padding: '8px 6px', textAlign: 'center', fontSize: '11px', fontWeight: 'bold', color: NAVY }}>ITEM NAME & DETAILS</th>
                   <th style={{ padding: '8px 6px', textAlign: 'center', fontSize: '11px', fontWeight: 'bold', color: NAVY, whiteSpace: 'nowrap' }}>SIZE</th>
