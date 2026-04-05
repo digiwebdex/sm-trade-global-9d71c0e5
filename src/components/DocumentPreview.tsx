@@ -191,7 +191,7 @@ export default function DocumentPreview(props: DocumentPreviewProps) {
           </div>
         </div>
 
-        <div style={{ height: '2px', backgroundColor: NAVY, margin: '0 35px' }} />
+        <div style={{ height: '2px', backgroundColor: '#999', margin: '0 35px' }} />
 
         <div style={{ padding: '14px 35px 10px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
           <div style={{ display: 'flex', alignItems: 'stretch' }}>
