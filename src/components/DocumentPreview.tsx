@@ -357,31 +357,33 @@ export default function DocumentPreview(props: DocumentPreviewProps) {
           <div style={{ 
             borderTop: '2px solid #aaa', padding: '8px 25px 6px', fontSize: '10px', color: '#555',
           }}>
-            <div style={{ textAlign: 'center', lineHeight: '1.6' }}>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '16px', marginBottom: '2px' }}>
-                <span>✉ info@smtradeint.com</span>
-                <span>🌐 smtradeint.com</span>
+            <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'center', position: 'relative' }}>
+              <div style={{ textAlign: 'center', lineHeight: '1.6', flex: 1 }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '16px', marginBottom: '2px' }}>
+                  <span>✉ info@smtradeint.com</span>
+                  <span>🌐 smtradeint.com</span>
+                </div>
+                <div style={{ marginBottom: '2px' }}>
+                  ◉ Address : House # 7, Road # 19/A, Sector # 4, Uttara, Dhaka-1230
+                </div>
+                <div style={{ marginBottom: '2px' }}>
+                  ◉ B-25/4, Al-Baraka Super Market, Office # 9-10, Mojidpur Road, Savar, Dhaka-1340
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '16px' }}>
+                  <span>☎ +8801876666888</span>
+                  <span>☎ +8802244466664</span>
+                </div>
               </div>
-              <div style={{ marginBottom: '2px' }}>
-                ◉ Address : House # 7, Road # 19/A, Sector # 4, Uttara, Dhaka-1230
-              </div>
-              <div style={{ marginBottom: '2px' }}>
-                ◉ B-25/4, Al-Baraka Super Market, Office # 9-10, Mojidpur Road, Savar, Dhaka-1340
-              </div>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '16px' }}>
-                <span>☎ +8801876666888</span>
-                <span>☎ +8802244466664</span>
-              </div>
+              {qrDataUrl && (
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', position: 'absolute', right: '0px', top: '-5px' }}>
+                  <img src={qrDataUrl} alt="QR" style={{ width: '80px', height: '80px' }} />
+                  <span style={{ fontSize: '7px', color: '#1B3A5C', marginTop: '3px', fontWeight: 600 }}>
+                    Scan to view {type === 'challan' ? 'challan' : type === 'quotation' ? 'quotation' : 'invoice'}
+                  </span>
+                  <span style={{ fontSize: '6px', color: '#666', marginTop: '1px' }}>Scan for details</span>
+                </div>
+              )}
             </div>
-            {qrDataUrl && (
-              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: '10px' }}>
-                <img src={qrDataUrl} alt="QR" style={{ width: '80px', height: '80px' }} />
-                <span style={{ fontSize: '7px', color: '#1B3A5C', marginTop: '3px', fontWeight: 600 }}>
-                  Scan to view {type === 'challan' ? 'challan' : type === 'quotation' ? 'quotation' : 'invoice'}
-                </span>
-                <span style={{ fontSize: '6px', color: '#666', marginTop: '1px' }}>Scan for details</span>
-              </div>
-            )}
           </div>
         </div>
       </div>
