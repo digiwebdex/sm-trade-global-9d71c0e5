@@ -373,9 +373,15 @@ export default function DocumentPreview(props: DocumentPreviewProps) {
                 <span>☎ +8802244466664</span>
               </div>
             </div>
-            <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '-30px' }}>
-              {qrDataUrl && <img src={qrDataUrl} alt="QR" style={{ width: '55px', height: '55px' }} />}
-            </div>
+            {qrDataUrl && (
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: '10px' }}>
+                <img src={qrDataUrl} alt="QR" style={{ width: '80px', height: '80px' }} />
+                <span style={{ fontSize: '7px', color: '#1B3A5C', marginTop: '3px', fontWeight: 600 }}>
+                  Scan to view {type === 'challan' ? 'challan' : type === 'quotation' ? 'quotation' : 'invoice'}
+                </span>
+                <span style={{ fontSize: '6px', color: '#666', marginTop: '1px' }}>Scan for details</span>
+              </div>
+            )}
           </div>
         </div>
       </div>
