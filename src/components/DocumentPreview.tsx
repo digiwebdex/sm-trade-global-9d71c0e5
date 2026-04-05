@@ -352,19 +352,25 @@ export default function DocumentPreview(props: DocumentPreviewProps) {
           </div>
 
           <div style={{ 
-            borderTop: '2px solid #aaa', padding: '6px 35px 0', fontSize: '10px', color: '#555',
+            borderTop: '2px solid #aaa', padding: '8px 25px 6px', fontSize: '10px', color: '#555',
           }}>
-            <div style={{ textAlign: 'center' }}>
-              <div style={{ marginBottom: '2px' }}>
-                <span style={{ color: '#1f3b8a' }}>{settings.email}</span>, <span style={{ color: '#1f3b8a' }}>{settings.website}</span>
+            <div style={{ textAlign: 'center', lineHeight: '1.6' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '16px', marginBottom: '2px' }}>
+                <span>✉ info@smtradeint.com</span>
+                <span>🌐 smtradeint.com</span>
               </div>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
-                <span>{settings.phone}</span>
-                <span style={{ color: '#ccc' }}>|</span>
-                <span>{settings.address}</span>
+              <div style={{ marginBottom: '2px' }}>
+                ◉ Address : House # 7, Road # 19/A, Sector # 4, Uttara, Dhaka-1230
+              </div>
+              <div style={{ marginBottom: '2px' }}>
+                ◉ B-25/4, Al-Baraka Super Market, Office # 9-10, Mojidpur Road, Savar, Dhaka-1340
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '16px' }}>
+                <span>☎ +8801876666888</span>
+                <span>☎ +8802244466664</span>
               </div>
             </div>
-            <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '-18px' }}>
+            <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '-30px' }}>
               {qrDataUrl && <img src={qrDataUrl} alt="QR" style={{ width: '55px', height: '55px' }} />}
             </div>
           </div>
