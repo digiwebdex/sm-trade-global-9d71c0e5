@@ -34,14 +34,15 @@ interface DocumentPreviewProps {
 const formatNumber = (num: number | string) => {
   const n = typeof num === 'string' ? parseFloat(num) : num;
   if (isNaN(n)) return '0';
-  if (Number.isInteger(n)) return n.toLocaleString('en-IN');
+  // Check if value has no meaningful decimal (e.g. 20000.00 → no .00)
+  if (n % 1 === 0) return Math.round(n).toLocaleString('en-IN');
   return n.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 };
 
 const formatPlain = (num: number | string) => {
   const n = typeof num === 'string' ? parseFloat(num) : num;
   if (isNaN(n)) return '0';
-  if (Number.isInteger(n)) return n.toString();
+  if (n % 1 === 0) return Math.round(n).toString();
   return n.toFixed(2);
 };
 
