@@ -377,10 +377,10 @@ export default function DocumentPreview(props: DocumentPreviewProps) {
               {qrDataUrl && (
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', position: 'absolute', right: '0px', top: '-5px' }}>
                   <img src={qrDataUrl} alt="QR" style={{ width: '80px', height: '80px' }} />
-                  <span style={{ fontSize: '7px', color: '#1B3A5C', marginTop: '3px', fontWeight: 600 }}>
+                  <span style={{ fontSize: '8px', color: '#1B3A5C', marginTop: '4px', fontWeight: 700, whiteSpace: 'nowrap' }}>
                     Scan to view {type === 'challan' ? 'challan' : type === 'quotation' ? 'quotation' : 'invoice'}
                   </span>
-                  <span style={{ fontSize: '6px', color: '#666', marginTop: '1px' }}>Scan for details</span>
+                  <span style={{ fontSize: '7px', color: '#555', marginTop: '2px', whiteSpace: 'nowrap' }}>for details</span>
                 </div>
               )}
             </div>
