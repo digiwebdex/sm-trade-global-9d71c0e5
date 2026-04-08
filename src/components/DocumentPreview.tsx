@@ -355,7 +355,7 @@ export default function DocumentPreview(props: DocumentPreviewProps) {
           </div>
 
           <div style={{ 
-            borderTop: '2px solid #aaa', padding: '8px 25px 14px', fontSize: '10px', color: '#555', overflow: 'visible',
+            borderTop: '2px solid #aaa', padding: '8px 25px 30px', fontSize: '10px', color: '#555', overflow: 'visible',
           }}>
             <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'center', position: 'relative' }}>
               <div style={{ textAlign: 'center', lineHeight: '1.6', flex: 1 }}>
