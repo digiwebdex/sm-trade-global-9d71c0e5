@@ -360,8 +360,8 @@ export default function DocumentPreview(props: DocumentPreviewProps) {
             <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'center', position: 'relative' }}>
               <div style={{ textAlign: 'center', lineHeight: '1.6', flex: 1 }}>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '16px', marginBottom: '2px' }}>
-                  <span>✉ info@smtradeint.com</span>
-                  <span>🌐 smtradeint.com</span>
+                  <span style={{ color: '#1a73e8' }}>✉ info@smtradeint.com</span>
+                  <span style={{ color: '#1a73e8' }}>🌐 smtradeint.com</span>
                 </div>
                 <div style={{ marginBottom: '2px' }}>
                   ◉ Address : House # 7, Road # 19/A, Sector # 4, Uttara, Dhaka-1230
