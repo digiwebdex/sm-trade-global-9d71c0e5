@@ -11,9 +11,9 @@ import { api } from '@/utils/api';
 import { formatBDT } from '@/lib/utils';
 import { generateId, generateDocNumber } from '@/utils/documentNumbers';
 import { Quotation, LineItem, Customer } from '@/types';
-import DocumentPreview, { printDocument } from '@/components/DocumentPreview';
+import DocumentPreview, { printDocument, downloadDocument } from '@/components/DocumentPreview';
 import { toast } from 'sonner';
-import { Plus, Trash2, Eye, ArrowLeft, Search, Pencil, Printer, Upload } from 'lucide-react';
+import { Plus, Trash2, Eye, ArrowLeft, Search, Pencil, Printer, Upload, Download } from 'lucide-react';
 import SignatureUploadField from '@/components/SignatureUploadField';
 
 const emptyItem = (): LineItem => ({ id: generateId(), description: '', quantity: 1, unitPrice: 0, total: 0 });
@@ -323,7 +323,7 @@ function QuotationView({ id, onBack }: { id: string; onBack: () => void }) {
           </Badge>
         </div>
         <div className="flex flex-wrap gap-3 mb-4">
-          <Button onClick={() => printDocument(q.quotationNumber)} variant="outline" className="gap-2"><Printer className="h-4 w-4" /> Download Quotation</Button>
+          <Button onClick={() => downloadDocument(q.quotationNumber)} variant="outline" className="gap-2"><Download className="h-4 w-4" /> Download Quotation</Button>
           <Button onClick={() => printDocument(q.quotationNumber)} variant="outline" className="gap-2"><Printer className="h-4 w-4" /> Print</Button>
           <Button onClick={handleShare} variant="outline" className="gap-2"><Eye className="h-4 w-4" /> Share</Button>
           <Button onClick={() => navigate(`/quotations/edit-${id}`)} variant="outline" className="gap-2"><Pencil className="h-4 w-4" /> Quick Edit</Button>

@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import QRCode from 'qrcode';
+import html2canvas from 'html2canvas';
+import jsPDF from 'jspdf';
 import { CompanySettings, LineItem, ChallanItem, Payment } from '@/types';
 import { numberToWords } from '@/utils/numberToWords';
 import { api } from '@/utils/api';
@@ -74,6 +76,42 @@ export function printDocument(docNumber: string) {
   document.title = docNumber;
   window.print();
   document.title = 'S. M. Trade International';
+}
+
+export async function downloadDocument(docNumber: string) {
+  const el = document.querySelector('.document-preview-wrapper') as HTMLElement;
+  if (!el) return;
+  try {
+    const canvas = await html2canvas(el, {
+      scale: 2,
+      useCORS: true,
+      logging: false,
+      backgroundColor: '#ffffff',
+    });
+    const imgData = canvas.toDataURL('image/jpeg', 0.95);
+    const pdf = new jsPDF('p', 'mm', 'a4');
+    const pdfWidth = 210;
+    const pdfHeight = 297;
+    const imgWidth = pdfWidth;
+    const imgHeight = (canvas.height * pdfWidth) / canvas.width;
+    
+    let heightLeft = imgHeight;
+    let position = 0;
+    
+    pdf.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight);
+    heightLeft -= pdfHeight;
+    
+    while (heightLeft > 0) {
+      position -= pdfHeight;
+      pdf.addPage();
+      pdf.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight);
+      heightLeft -= pdfHeight;
+    }
+    
+    pdf.save(`${docNumber}.pdf`);
+  } catch (err) {
+    console.error('PDF download failed:', err);
+  }
 }
 
 export default function DocumentPreview(props: DocumentPreviewProps) {
