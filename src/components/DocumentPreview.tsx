@@ -355,10 +355,10 @@ export default function DocumentPreview(props: DocumentPreviewProps) {
           </div>
 
           <div style={{ 
-            borderTop: '2px solid #aaa', padding: '8px 25px 30px', fontSize: '10px', color: '#555', overflow: 'visible',
+            borderTop: '2px solid #aaa', padding: '10px 25px 40px', fontSize: '10px', color: '#555', overflow: 'visible',
           }}>
             <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'center', position: 'relative' }}>
-              <div style={{ textAlign: 'center', lineHeight: '1.6', flex: 1 }}>
+              <div style={{ textAlign: 'center', lineHeight: '1.6', flex: 1, paddingRight: '100px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '16px', marginBottom: '2px' }}>
                   <span style={{ color: '#1a73e8' }}>✉ info@smtradeint.com</span>
                   <span style={{ color: '#1a73e8', display: 'inline-flex', alignItems: 'center', gap: '2px' }}><svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#1a73e8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg> smtradeint.com</span>
@@ -375,12 +375,12 @@ export default function DocumentPreview(props: DocumentPreviewProps) {
                 </div>
               </div>
               {qrDataUrl && (
-                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', position: 'absolute', right: '0px', top: '-5px' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', position: 'absolute', right: '0px', top: '-8px' }}>
                   <img src={qrDataUrl} alt="QR" style={{ width: '80px', height: '80px' }} />
-                  <span style={{ fontSize: '8px', color: '#1B3A5C', marginTop: '4px', fontWeight: 700, whiteSpace: 'nowrap' }}>
+                  <span style={{ fontSize: '9px', color: '#1B3A5C', marginTop: '4px', fontWeight: 700, whiteSpace: 'nowrap' }}>
                     Scan to view {type === 'challan' ? 'challan' : type === 'quotation' ? 'quotation' : 'invoice'}
                   </span>
-                  <span style={{ fontSize: '7px', color: '#555', marginTop: '2px', whiteSpace: 'nowrap' }}>for details</span>
+                  <span style={{ fontSize: '8px', color: '#555', marginTop: '2px', whiteSpace: 'nowrap' }}>for details</span>
                 </div>
               )}
             </div>
