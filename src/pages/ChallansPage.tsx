@@ -319,7 +319,7 @@ function ChallanView({ id, onBack }: { id: string; onBack: () => void }) {
           </Badge>
         </div>
         <div className="flex flex-wrap gap-3 mb-4">
-          <Button onClick={() => printDocument(c.challanNumber)} variant="outline" className="gap-2"><Printer className="h-4 w-4" /> Download Challan</Button>
+          <Button onClick={() => downloadDocument(c.challanNumber)} variant="outline" className="gap-2"><Download className="h-4 w-4" /> Download Challan</Button>
           <Button onClick={() => printDocument(c.challanNumber)} variant="outline" className="gap-2"><Printer className="h-4 w-4" /> Print</Button>
           <Button onClick={handleShare} variant="outline" className="gap-2"><Eye className="h-4 w-4" /> Share</Button>
           <Button onClick={() => navigate(`/challans/edit-${id}`)} variant="outline" className="gap-2"><Pencil className="h-4 w-4" /> Quick Edit</Button>
