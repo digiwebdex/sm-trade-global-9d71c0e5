@@ -281,18 +281,37 @@ function InvoiceForm({ editId, onDone }: { editId?: string; onDone: () => void }
             </div>
 
             <div>
-              <div className="flex justify-between items-center mb-2">
-                <label className="text-sm font-medium">Line Items</label>
-                <Button size="sm" variant="outline" onClick={() => setForm({ ...form, items: [...form.items, emptyItem()] })}><Plus className="h-3 w-3 mr-1" /> Add</Button>
+              <div className="flex justify-between items-center mb-3">
+                <label className="text-sm font-semibold flex items-center gap-2" style={{ color: '#1B3A5C' }}>
+                  <span className="text-lg">$</span> Line Items
+                </label>
+                <Button size="sm" variant="outline" onClick={() => setForm({ ...form, items: [...form.items, emptyItem()] })}><Plus className="h-3 w-3 mr-1" /> Add Item</Button>
               </div>
-              <div className="space-y-2">
+              <div className="space-y-3">
                 {form.items.map((item, i) => (
-                  <div key={item.id} className="grid grid-cols-12 gap-2 items-center">
-                    <Input className="col-span-5" placeholder="Description" value={item.description} onChange={(e) => updateItem(i, 'description', e.target.value)} />
-                    <Input className="col-span-2" type="number" placeholder="Qty" value={item.quantity} onChange={(e) => updateItem(i, 'quantity', parseFloat(e.target.value) || 0)} />
-                    <Input className="col-span-2" type="number" placeholder="Price" value={item.unitPrice} onChange={(e) => updateItem(i, 'unitPrice', parseFloat(e.target.value) || 0)} />
-                    <div className="col-span-2 text-right text-sm font-medium">৳{formatBDT(item.total)}</div>
-                    <Button size="icon" variant="ghost" className="col-span-1 text-destructive" onClick={() => setForm({ ...form, items: form.items.filter((_, j) => j !== i) })}><Trash2 className="h-3 w-3" /></Button>
+                  <div key={item.id} className="border rounded-lg p-4 space-y-3">
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm font-semibold text-muted-foreground">{i + 1}.</span>
+                      <Input className="flex-1" placeholder="Item description" value={item.description} onChange={(e) => updateItem(i, 'description', e.target.value)} />
+                      <Button size="icon" variant="ghost" className="text-muted-foreground hover:text-destructive shrink-0" onClick={() => setForm({ ...form, items: form.items.filter((_, j) => j !== i) })}><Trash2 className="h-4 w-4" /></Button>
+                    </div>
+                    <div className="grid grid-cols-3 gap-4">
+                      <div>
+                        <label className="text-xs text-muted-foreground mb-1 block">Qty</label>
+                        <Input type="number" value={item.quantity} onChange={(e) => updateItem(i, 'quantity', parseFloat(e.target.value) || 0)} className="text-center" />
+                      </div>
+                      <div>
+                        <label className="text-xs text-muted-foreground mb-1 block">Unit Price</label>
+                        <div className="flex items-center gap-1">
+                          <span className="text-sm text-muted-foreground">৳</span>
+                          <Input type="number" value={item.unitPrice} onChange={(e) => updateItem(i, 'unitPrice', parseFloat(e.target.value) || 0)} />
+                        </div>
+                      </div>
+                      <div>
+                        <label className="text-xs text-muted-foreground mb-1 block">Total</label>
+                        <div className="text-right text-sm font-bold pt-2" style={{ color: '#1B3A5C' }}>৳{formatBDT(item.total)}</div>
+                      </div>
+                    </div>
                   </div>
                 ))}
               </div>

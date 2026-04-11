@@ -226,19 +226,48 @@ function ChallanForm({ editId, onDone }: { editId?: string; onDone: () => void }
             <div><label className="text-sm font-medium">Status</label>
               <Select value={form.status} onValueChange={(v: any) => setForm({ ...form, status: v })}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="draft">Draft</SelectItem><SelectItem value="processing">Processing</SelectItem><SelectItem value="delivered">Delivered</SelectItem><SelectItem value="complete">Complete</SelectItem></SelectContent></Select></div>
             <div>
-              <div className="flex justify-between items-center mb-2"><label className="text-sm font-medium">Items</label><Button size="sm" variant="outline" onClick={() => setForm({ ...form, items: [...form.items, emptyItem()] })}><Plus className="h-3 w-3 mr-1" /> Add</Button></div>
-              {form.items.map((item, i) => (
-                <div key={item.id} className="grid grid-cols-12 gap-2 items-center mb-2">
-                  <Input className="col-span-3" placeholder="Item Name" value={item.itemName} onChange={(e) => updateItem(i, 'itemName', e.target.value)} />
-                  <Input className="col-span-2" placeholder="Details" value={item.details} onChange={(e) => updateItem(i, 'details', e.target.value)} />
-                  <Input className="col-span-1" placeholder="Size" value={item.size} onChange={(e) => updateItem(i, 'size', e.target.value)} />
-                  <Input className="col-span-2" type="number" placeholder="Del Qty" value={item.deliveryQty} onChange={(e) => updateItem(i, 'deliveryQty', parseFloat(e.target.value) || 0)} />
-                  <Input className="col-span-2" type="number" placeholder="Bal Qty" value={item.balanceQty} onChange={(e) => updateItem(i, 'balanceQty', parseFloat(e.target.value) || 0)} />
-                  <Input className="col-span-1" placeholder="Unit" value={item.unit} onChange={(e) => updateItem(i, 'unit', e.target.value)} />
-                  <Button size="icon" variant="ghost" className="col-span-1 text-destructive" onClick={() => setForm({ ...form, items: form.items.filter((_, j) => j !== i) })}><Trash2 className="h-3 w-3" /></Button>
-                </div>
-              ))}
-              <div className="text-right mt-3 font-bold">Total Delivery Qty: {totalQuantity}</div>
+              <div className="flex justify-between items-center mb-3">
+                <label className="text-sm font-semibold flex items-center gap-2" style={{ color: '#1B3A5C' }}>
+                  <span className="text-lg">📦</span> Challan Items
+                </label>
+                <Button size="sm" variant="outline" onClick={() => setForm({ ...form, items: [...form.items, emptyItem()] })}><Plus className="h-3 w-3 mr-1" /> Add Item</Button>
+              </div>
+              <div className="space-y-3">
+                {form.items.map((item, i) => (
+                  <div key={item.id} className="border rounded-lg p-4 space-y-3">
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm font-semibold text-muted-foreground">{i + 1}.</span>
+                      <Input className="flex-1" placeholder="Item Name" value={item.itemName} onChange={(e) => updateItem(i, 'itemName', e.target.value)} />
+                      <Button size="icon" variant="ghost" className="text-muted-foreground hover:text-destructive shrink-0" onClick={() => setForm({ ...form, items: form.items.filter((_, j) => j !== i) })}><Trash2 className="h-4 w-4" /></Button>
+                    </div>
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <label className="text-xs text-muted-foreground mb-1 block">Details</label>
+                        <Input placeholder="Details" value={item.details} onChange={(e) => updateItem(i, 'details', e.target.value)} />
+                      </div>
+                      <div>
+                        <label className="text-xs text-muted-foreground mb-1 block">Size</label>
+                        <Input placeholder="Size" value={item.size} onChange={(e) => updateItem(i, 'size', e.target.value)} />
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-3 gap-3">
+                      <div>
+                        <label className="text-xs text-muted-foreground mb-1 block">Delivery Qty</label>
+                        <Input type="number" value={item.deliveryQty} onChange={(e) => updateItem(i, 'deliveryQty', parseFloat(e.target.value) || 0)} className="text-center" />
+                      </div>
+                      <div>
+                        <label className="text-xs text-muted-foreground mb-1 block">Balance Qty</label>
+                        <Input type="number" value={item.balanceQty} onChange={(e) => updateItem(i, 'balanceQty', parseFloat(e.target.value) || 0)} className="text-center" />
+                      </div>
+                      <div>
+                        <label className="text-xs text-muted-foreground mb-1 block">Unit</label>
+                        <Input placeholder="Pcs" value={item.unit} onChange={(e) => updateItem(i, 'unit', e.target.value)} />
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <div className="text-right mt-3 font-bold" style={{ color: '#1B3A5C' }}>Total Delivery Qty: {totalQuantity}</div>
             </div>
             <div>
               <label className="text-sm font-medium mb-2 block">Signatures</label>
