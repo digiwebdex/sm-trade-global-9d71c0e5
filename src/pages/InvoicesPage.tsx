@@ -416,11 +416,9 @@ function InvoiceView({ id, onBack }: { id: string; onBack: () => void }) {
   if (loading) return <div className="p-8 text-center text-muted-foreground">Loading...</div>;
   if (!inv) return <div>Invoice not found</div>;
 
-  const handleDownload = () => {
-    document.title = inv.invoiceNumber;
-    window.print();
-    document.title = 'S. M. Trade International';
-  };
+   const handleDownload = () => {
+     downloadDocument(inv.invoiceNumber);
+   };
 
   const handleShare = async () => {
     const shareData = {

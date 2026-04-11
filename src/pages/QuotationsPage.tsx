@@ -13,7 +13,7 @@ import { generateId, generateDocNumber } from '@/utils/documentNumbers';
 import { Quotation, LineItem, Customer } from '@/types';
 import DocumentPreview, { printDocument, downloadDocument } from '@/components/DocumentPreview';
 import { toast } from 'sonner';
-import { Plus, Trash2, Eye, ArrowLeft, Search, Pencil, Printer, Upload } from 'lucide-react';
+import { Plus, Trash2, Eye, ArrowLeft, Search, Pencil, Printer, Upload, Download } from 'lucide-react';
 import SignatureUploadField from '@/components/SignatureUploadField';
 
 const emptyItem = (): LineItem => ({ id: generateId(), description: '', quantity: 1, unitPrice: 0, total: 0 });

@@ -12,7 +12,7 @@ import { generateId, generateDocNumber } from '@/utils/documentNumbers';
 import { Challan, ChallanItem, Customer } from '@/types';
 import DocumentPreview, { printDocument, downloadDocument } from '@/components/DocumentPreview';
 import { toast } from 'sonner';
-import { Plus, Trash2, Eye, ArrowLeft, Search, Pencil, Printer, Upload } from 'lucide-react';
+import { Plus, Trash2, Eye, ArrowLeft, Search, Pencil, Printer, Upload, Download } from 'lucide-react';
 import SignatureUploadField from '@/components/SignatureUploadField';
 
 const emptyItem = (): ChallanItem => ({ id: generateId(), itemName: '', details: '', size: '', deliveryQty: 0, balanceQty: 0, unit: 'Pcs' });
