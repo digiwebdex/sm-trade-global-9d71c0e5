@@ -10,7 +10,7 @@ import { Badge } from '@/components/ui/badge';
 import { api } from '@/utils/api';
 import { generateId, generateDocNumber } from '@/utils/documentNumbers';
 import { Challan, ChallanItem, Customer } from '@/types';
-import DocumentPreview, { printDocument } from '@/components/DocumentPreview';
+import DocumentPreview, { printDocument, downloadDocument } from '@/components/DocumentPreview';
 import { toast } from 'sonner';
 import { Plus, Trash2, Eye, ArrowLeft, Search, Pencil, Printer, Upload } from 'lucide-react';
 import SignatureUploadField from '@/components/SignatureUploadField';

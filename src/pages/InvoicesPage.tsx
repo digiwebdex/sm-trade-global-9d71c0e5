@@ -11,7 +11,7 @@ import { api } from '@/utils/api';
 import { formatBDT } from '@/lib/utils';
 import { generateId, generateDocNumber } from '@/utils/documentNumbers';
 import { Invoice, LineItem, Customer, Payment } from '@/types';
-import DocumentPreview, { printDocument } from '@/components/DocumentPreview';
+import DocumentPreview, { printDocument, downloadDocument } from '@/components/DocumentPreview';
 import { toast } from 'sonner';
 import { Plus, Trash2, Eye, ArrowLeft, Search, Pencil, Printer, Share2, Download } from 'lucide-react';
 import SignatureUploadField from '@/components/SignatureUploadField';
