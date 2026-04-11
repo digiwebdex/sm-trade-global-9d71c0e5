@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import QRCode from 'qrcode';
+import html2canvas from 'html2canvas';
+import jsPDF from 'jspdf';
 import { CompanySettings, LineItem, ChallanItem, Payment } from '@/types';
 import { numberToWords } from '@/utils/numberToWords';
 import { api } from '@/utils/api';
