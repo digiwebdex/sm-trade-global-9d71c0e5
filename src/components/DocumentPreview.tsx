@@ -101,7 +101,8 @@ export async function downloadDocument(docNumber: string) {
     pdf.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight);
     heightLeft -= pdfHeight;
     
-    while (heightLeft > 0) {
+    // Only add extra pages if remaining content is significant (> 5mm)
+    while (heightLeft > 5) {
       position -= pdfHeight;
       pdf.addPage();
       pdf.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight);
