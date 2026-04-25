@@ -81,14 +81,16 @@ export function printDocument(docNumber: string) {
 export async function downloadDocument(docNumber: string) {
   const wrapper = document.querySelector('.document-preview-wrapper') as HTMLElement;
   if (!wrapper) return;
+  const previousWrapperOverflow = wrapper.style.overflow;
   try {
+    wrapper.style.overflow = 'visible';
     const headerEl = wrapper.querySelector('.doc-header-section') as HTMLElement | null;
     const footerEl = wrapper.querySelector('.doc-footer-section') as HTMLElement | null;
     const bodyEl = wrapper.querySelector('.doc-body-section') as HTMLElement | null;
 
     // Fallback: original single-shot approach if structure not found
     if (!headerEl || !footerEl || !bodyEl) {
-      const canvas = await html2canvas(wrapper, { scale: 2, useCORS: true, logging: false, backgroundColor: '#ffffff' });
+      const canvas = await html2canvas(wrapper, { scale: 2, useCORS: true, logging: false, backgroundColor: '#ffffff', height: wrapper.scrollHeight, windowHeight: wrapper.scrollHeight });
       const imgData = canvas.toDataURL('image/jpeg', 0.95);
       const pdf = new jsPDF('p', 'mm', 'a4');
       const imgWidth = 210;
@@ -133,7 +135,7 @@ export async function downloadDocument(docNumber: string) {
     const bodyAvailLastMm = pdfHeight - topMargin - headerHeightMm - footerHeightMm - bottomMargin;
     if (bodyAvailMm <= 20) {
       // Header+footer too tall, fall back to single-shot
-      const canvas = await html2canvas(wrapper, { scale, useCORS: true, logging: false, backgroundColor: '#ffffff' });
+      const canvas = await html2canvas(wrapper, { scale, useCORS: true, logging: false, backgroundColor: '#ffffff', height: wrapper.scrollHeight, windowHeight: wrapper.scrollHeight });
       const imgData = canvas.toDataURL('image/jpeg', 0.95);
       const imgHeight = (canvas.height * pdfWidth) / canvas.width;
       pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, imgHeight);
