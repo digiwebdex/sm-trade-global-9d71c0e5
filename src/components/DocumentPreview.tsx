@@ -79,36 +79,109 @@ export function printDocument(docNumber: string) {
 }
 
 export async function downloadDocument(docNumber: string) {
-  const el = document.querySelector('.document-preview-wrapper') as HTMLElement;
-  if (!el) return;
+  const wrapper = document.querySelector('.document-preview-wrapper') as HTMLElement;
+  if (!wrapper) return;
   try {
-    const canvas = await html2canvas(el, {
-      scale: 2,
-      useCORS: true,
-      logging: false,
-      backgroundColor: '#ffffff',
-    });
-    const imgData = canvas.toDataURL('image/jpeg', 0.95);
+    const headerEl = wrapper.querySelector('.doc-header-section') as HTMLElement | null;
+    const footerEl = wrapper.querySelector('.doc-footer-section') as HTMLElement | null;
+    const bodyEl = wrapper.querySelector('.doc-body-section') as HTMLElement | null;
+
+    // Fallback: original single-shot approach if structure not found
+    if (!headerEl || !footerEl || !bodyEl) {
+      const canvas = await html2canvas(wrapper, { scale: 2, useCORS: true, logging: false, backgroundColor: '#ffffff' });
+      const imgData = canvas.toDataURL('image/jpeg', 0.95);
+      const pdf = new jsPDF('p', 'mm', 'a4');
+      const imgWidth = 210;
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+      let heightLeft = imgHeight;
+      let position = 0;
+      pdf.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight);
+      heightLeft -= 297;
+      while (heightLeft > 5) {
+        position -= 297;
+        pdf.addPage();
+        pdf.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight);
+        heightLeft -= 297;
+      }
+      pdf.save(`${docNumber}.pdf`);
+      return;
+    }
+
+    const scale = 2;
+    const [headerCanvas, footerCanvas, bodyCanvas] = await Promise.all([
+      html2canvas(headerEl, { scale, useCORS: true, logging: false, backgroundColor: '#ffffff' }),
+      html2canvas(footerEl, { scale, useCORS: true, logging: false, backgroundColor: '#ffffff' }),
+      html2canvas(bodyEl, { scale, useCORS: true, logging: false, backgroundColor: '#ffffff' }),
+    ]);
+
     const pdf = new jsPDF('p', 'mm', 'a4');
     const pdfWidth = 210;
     const pdfHeight = 297;
-    const imgWidth = pdfWidth;
-    const imgHeight = (canvas.height * pdfWidth) / canvas.width;
-    
-    let heightLeft = imgHeight;
-    let position = 0;
-    
-    pdf.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight);
-    heightLeft -= pdfHeight;
-    
-    // Only add extra pages if remaining content is significant (> 5mm)
-    while (heightLeft > 5) {
-      position -= pdfHeight;
-      pdf.addPage();
-      pdf.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight);
-      heightLeft -= pdfHeight;
+    // 0.5 inch = 12.7mm margin on top, bottom and sides for repeated content
+    const sideMargin = 0; // keep edges flush like the on-screen design
+    const topMargin = 0;
+    const bottomMargin = 12.7; // 0.5 inch bottom margin (footer sits above this)
+
+    const contentWidth = pdfWidth - sideMargin * 2;
+    const headerHeightMm = (headerCanvas.height * contentWidth) / headerCanvas.width;
+    const footerHeightMm = (footerCanvas.height * contentWidth) / footerCanvas.width;
+    const bodyTotalHeightMm = (bodyCanvas.height * contentWidth) / bodyCanvas.width;
+
+    // Available vertical space for body on each page
+    const bodyAvailMm = pdfHeight - topMargin - headerHeightMm - footerHeightMm - bottomMargin;
+    if (bodyAvailMm <= 20) {
+      // Header+footer too tall, fall back to single-shot
+      const canvas = await html2canvas(wrapper, { scale, useCORS: true, logging: false, backgroundColor: '#ffffff' });
+      const imgData = canvas.toDataURL('image/jpeg', 0.95);
+      const imgHeight = (canvas.height * pdfWidth) / canvas.width;
+      pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, imgHeight);
+      pdf.save(`${docNumber}.pdf`);
+      return;
     }
-    
+
+    // Convert per-page mm slice into source-pixel slice on bodyCanvas
+    const pxPerMm = bodyCanvas.width / contentWidth;
+    const sliceHeightPx = Math.floor(bodyAvailMm * pxPerMm);
+
+    const headerImg = headerCanvas.toDataURL('image/jpeg', 0.95);
+    const footerImg = footerCanvas.toDataURL('image/jpeg', 0.95);
+
+    let renderedPx = 0;
+    let pageIndex = 0;
+    while (renderedPx < bodyCanvas.height) {
+      if (pageIndex > 0) pdf.addPage();
+
+      // Header on every page
+      pdf.addImage(headerImg, 'JPEG', sideMargin, topMargin, contentWidth, headerHeightMm);
+
+      // Body slice
+      const remainingPx = bodyCanvas.height - renderedPx;
+      const thisSlicePx = Math.min(sliceHeightPx, remainingPx);
+
+      const sliceCanvas = document.createElement('canvas');
+      sliceCanvas.width = bodyCanvas.width;
+      sliceCanvas.height = thisSlicePx;
+      const ctx = sliceCanvas.getContext('2d');
+      if (ctx) {
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, sliceCanvas.width, sliceCanvas.height);
+        ctx.drawImage(bodyCanvas, 0, renderedPx, bodyCanvas.width, thisSlicePx, 0, 0, bodyCanvas.width, thisSlicePx);
+      }
+      const sliceImg = sliceCanvas.toDataURL('image/jpeg', 0.95);
+      const thisSliceMm = (thisSlicePx * contentWidth) / bodyCanvas.width;
+      pdf.addImage(sliceImg, 'JPEG', sideMargin, topMargin + headerHeightMm, contentWidth, thisSliceMm);
+
+      // Footer on every page (always at fixed position from bottom respecting 0.5in margin)
+      const footerY = pdfHeight - bottomMargin - footerHeightMm;
+      pdf.addImage(footerImg, 'JPEG', sideMargin, footerY, contentWidth, footerHeightMm);
+
+      renderedPx += thisSlicePx;
+      pageIndex += 1;
+
+      // Safety cap
+      if (pageIndex > 20) break;
+    }
+
     pdf.save(`${docNumber}.pdf`);
   } catch (err) {
     console.error('PDF download failed:', err);
@@ -174,7 +247,8 @@ export default function DocumentPreview(props: DocumentPreviewProps) {
     <div className="bg-white mx-auto shadow-lg document-preview-wrapper" id="document-preview" style={{ fontFamily: "'Segoe UI', Arial, sans-serif", color: '#333', fontSize: '13px', width: '794px', minHeight: '1123px', overflow: 'hidden' }}>
       <div style={{ border: '2px solid #d0d0d0', minHeight: '1119px', display: 'flex', flexDirection: 'column' }} className="document-border">
         
-        {/* ===== HEADER ===== */}
+        {/* ===== HEADER (repeats on every page) ===== */}
+        <div className="doc-header-section">
         <div style={{ padding: '18px 35px 12px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '18px' }}>
@@ -231,7 +305,11 @@ export default function DocumentPreview(props: DocumentPreviewProps) {
         </div>
 
         <div style={{ height: '2px', backgroundColor: '#999', margin: '0 35px' }} />
+        </div>
+        {/* ===== END HEADER ===== */}
 
+        {/* ===== BODY (slices across pages) ===== */}
+        <div className="doc-body-section" style={{ flex: 1 }}>
         <div style={{ padding: '14px 35px 10px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
           <div style={{ display: 'flex', alignItems: 'stretch' }}>
             <div style={{ width: '6px', backgroundColor: '#1f3b8a', borderRadius: '0px', marginRight: '12px', flexShrink: 0 }}></div>
@@ -372,7 +450,11 @@ export default function DocumentPreview(props: DocumentPreviewProps) {
           </div>
         )}
 
-        <div style={{ marginTop: 'auto', breakInside: 'avoid', pageBreakInside: 'avoid' }}>
+        </div>
+        {/* ===== END BODY ===== */}
+
+        {/* ===== FOOTER (repeats on every page) ===== */}
+        <div className="doc-footer-section" style={{ marginTop: 'auto', breakInside: 'avoid', pageBreakInside: 'avoid' }}>
           <div style={{ padding: '10px 35px 8px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
             {[
               { label: 'Received by', sig: props.signatureReceived || settings.signatureReceived },
