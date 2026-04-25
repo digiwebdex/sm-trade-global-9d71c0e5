@@ -149,8 +149,46 @@ export async function downloadDocument(docNumber: string) {
     const headerImg = headerCanvas.toDataURL('image/jpeg', 0.95);
     const footerImg = footerCanvas.toDataURL('image/jpeg', 0.95);
 
-    // Pre-determine if content fits on a single page (header+body+footer all together)
-    const fitsSinglePage = (headerHeightMm + bodyTotalHeightMm + footerHeightMm + topMargin + bottomMargin) <= pdfHeight + 1;
+    // ---------- Row-aware safe split points ----------
+    // To avoid cutting a table row in the middle, we collect the bottom-edge
+    // pixel position (within bodyCanvas) of every <tr> inside bodyEl. We can
+    // only split the body image at one of these safe positions.
+    const bodyRect = bodyEl.getBoundingClientRect();
+    const cssToCanvasY = bodyCanvas.height / bodyRect.height; // px(canvas) per px(css)
+    const safeCutsPx: number[] = [];
+    const rows = bodyEl.querySelectorAll('tr');
+    rows.forEach((tr) => {
+      const r = (tr as HTMLElement).getBoundingClientRect();
+      const bottomCssRelative = r.bottom - bodyRect.top;
+      const bottomCanvasPx = Math.round(bottomCssRelative * cssToCanvasY);
+      if (bottomCanvasPx > 0 && bottomCanvasPx <= bodyCanvas.height) {
+        safeCutsPx.push(bottomCanvasPx);
+      }
+    });
+    // Always allow ending at the very bottom
+    safeCutsPx.push(bodyCanvas.height);
+    // Sort + dedupe
+    const safeCuts = Array.from(new Set(safeCutsPx)).sort((a, b) => a - b);
+
+    // Pick the largest safe cut that fits within `maxPx` pixels from `startPx`.
+    // If no row boundary fits (single row taller than page), fall back to maxPx.
+    const pickCut = (startPx: number, maxPx: number, remainingPx: number): number => {
+      const limit = startPx + maxPx;
+      let best = -1;
+      for (const c of safeCuts) {
+        if (c <= startPx) continue;
+        if (c <= limit) {
+          if (c > best) best = c;
+        } else {
+          break;
+        }
+      }
+      if (best === -1) {
+        // No row boundary fits — force a hard cut to make progress
+        return startPx + Math.min(maxPx, remainingPx);
+      }
+      return best;
+    };
 
     let renderedPx = 0;
     let pageIndex = 0;
@@ -162,9 +200,21 @@ export async function downloadDocument(docNumber: string) {
 
       const remainingPx = bodyCanvas.height - renderedPx;
 
-      // Tentatively try to fit remaining body on this page (with footer reserved)
-      const isLastPage = remainingPx <= sliceHeightLastPx;
-      const thisSlicePx = isLastPage ? remainingPx : Math.min(sliceHeightPx, remainingPx);
+      // Try assuming THIS is the last page (footer reserved). If full remainder fits
+      // at a safe row boundary, consume it all. Otherwise this is a middle page —
+      // pick the largest row boundary that fits without footer reservation.
+      let thisSlicePx: number;
+      const fitsAsLast = remainingPx <= sliceHeightLastPx;
+      if (fitsAsLast) {
+        thisSlicePx = remainingPx;
+      } else {
+        const cutAt = pickCut(renderedPx, sliceHeightPx, remainingPx);
+        thisSlicePx = cutAt - renderedPx;
+        if (thisSlicePx <= 0) {
+          // safety: force minimum forward progress
+          thisSlicePx = Math.min(sliceHeightPx, remainingPx);
+        }
+      }
 
       const sliceCanvas = document.createElement('canvas');
       sliceCanvas.width = bodyCanvas.width;
@@ -189,7 +239,7 @@ export async function downloadDocument(docNumber: string) {
       }
 
       // Safety cap
-      if (pageIndex > 20) break;
+      if (pageIndex > 30) break;
     }
 
     pdf.save(`${docNumber}.pdf`);
