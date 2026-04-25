@@ -84,23 +84,33 @@
     max-width: 210mm !important;
     box-shadow: none !important;
     margin: 0 !important;
-    min-height: 297mm !important;
     height: auto !important;
+    min-height: 0 !important;
     max-height: none !important;
     overflow: visible !important;
-    page-break-inside: avoid !important;
-    break-inside: avoid-page !important;
   }
   .document-border {
     border: none !important;
-    min-height: 297mm !important;
     height: auto !important;
+    min-height: 0 !important;
     max-height: none !important;
     overflow: visible !important;
+    display: table !important;
+    width: 100% !important;
+  }
+  /* Repeat header on every printed page (browser-supported via thead-like grouping) */
+  .doc-header-section {
+    display: table-header-group;
+  }
+  .doc-footer-section {
+    display: table-footer-group;
+  }
+  .doc-body-section {
+    display: table-row-group;
   }
   @page {
     size: A4;
-    margin: 0;
+    margin: 0 0 12.7mm 0; /* 0.5 inch bottom margin reserved for footer */
   }
 }
 
