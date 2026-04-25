@@ -81,14 +81,16 @@ export function printDocument(docNumber: string) {
 export async function downloadDocument(docNumber: string) {
   const wrapper = document.querySelector('.document-preview-wrapper') as HTMLElement;
   if (!wrapper) return;
+  const previousWrapperOverflow = wrapper.style.overflow;
   try {
+    wrapper.style.overflow = 'visible';
     const headerEl = wrapper.querySelector('.doc-header-section') as HTMLElement | null;
     const footerEl = wrapper.querySelector('.doc-footer-section') as HTMLElement | null;
     const bodyEl = wrapper.querySelector('.doc-body-section') as HTMLElement | null;
 
     // Fallback: original single-shot approach if structure not found
     if (!headerEl || !footerEl || !bodyEl) {
-      const canvas = await html2canvas(wrapper, { scale: 2, useCORS: true, logging: false, backgroundColor: '#ffffff' });
+      const canvas = await html2canvas(wrapper, { scale: 2, useCORS: true, logging: false, backgroundColor: '#ffffff', height: wrapper.scrollHeight, windowHeight: wrapper.scrollHeight });
       const imgData = canvas.toDataURL('image/jpeg', 0.95);
       const pdf = new jsPDF('p', 'mm', 'a4');
       const imgWidth = 210;
@@ -109,9 +111,9 @@ export async function downloadDocument(docNumber: string) {
 
     const scale = 2;
     const [headerCanvas, footerCanvas, bodyCanvas] = await Promise.all([
-      html2canvas(headerEl, { scale, useCORS: true, logging: false, backgroundColor: '#ffffff' }),
-      html2canvas(footerEl, { scale, useCORS: true, logging: false, backgroundColor: '#ffffff' }),
-      html2canvas(bodyEl, { scale, useCORS: true, logging: false, backgroundColor: '#ffffff' }),
+      html2canvas(headerEl, { scale, useCORS: true, logging: false, backgroundColor: '#ffffff', height: headerEl.scrollHeight, windowHeight: headerEl.scrollHeight }),
+      html2canvas(footerEl, { scale, useCORS: true, logging: false, backgroundColor: '#ffffff', height: footerEl.scrollHeight, windowHeight: footerEl.scrollHeight }),
+      html2canvas(bodyEl, { scale, useCORS: true, logging: false, backgroundColor: '#ffffff', height: bodyEl.scrollHeight, windowHeight: bodyEl.scrollHeight }),
     ]);
 
     const pdf = new jsPDF('p', 'mm', 'a4');
@@ -133,7 +135,7 @@ export async function downloadDocument(docNumber: string) {
     const bodyAvailLastMm = pdfHeight - topMargin - headerHeightMm - footerHeightMm - bottomMargin;
     if (bodyAvailMm <= 20) {
       // Header+footer too tall, fall back to single-shot
-      const canvas = await html2canvas(wrapper, { scale, useCORS: true, logging: false, backgroundColor: '#ffffff' });
+      const canvas = await html2canvas(wrapper, { scale, useCORS: true, logging: false, backgroundColor: '#ffffff', height: wrapper.scrollHeight, windowHeight: wrapper.scrollHeight });
       const imgData = canvas.toDataURL('image/jpeg', 0.95);
       const imgHeight = (canvas.height * pdfWidth) / canvas.width;
       pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, imgHeight);
@@ -154,11 +156,12 @@ export async function downloadDocument(docNumber: string) {
     // pixel position (within bodyCanvas) of every <tr> inside bodyEl. We can
     // only split the body image at one of these safe positions.
     const bodyRect = bodyEl.getBoundingClientRect();
-    const cssToCanvasY = bodyCanvas.height / bodyRect.height; // px(canvas) per px(css)
+    const cssBodyHeight = Math.max(bodyRect.height, bodyEl.scrollHeight);
+    const cssToCanvasY = bodyCanvas.height / cssBodyHeight; // px(canvas) per px(css)
     const safeCutsPx: number[] = [];
-    const rows = bodyEl.querySelectorAll('tr');
-    rows.forEach((tr) => {
-      const r = (tr as HTMLElement).getBoundingClientRect();
+    const safeSections = bodyEl.querySelectorAll('tr, [data-pdf-section]');
+    safeSections.forEach((section) => {
+      const r = (section as HTMLElement).getBoundingClientRect();
       const bottomCssRelative = r.bottom - bodyRect.top;
       const bottomCanvasPx = Math.round(bottomCssRelative * cssToCanvasY);
       if (bottomCanvasPx > 0 && bottomCanvasPx <= bodyCanvas.height) {
@@ -245,6 +248,8 @@ export async function downloadDocument(docNumber: string) {
     pdf.save(`${docNumber}.pdf`);
   } catch (err) {
     console.error('PDF download failed:', err);
+  } finally {
+    wrapper.style.overflow = previousWrapperOverflow;
   }
 }
 
@@ -462,7 +467,7 @@ export default function DocumentPreview(props: DocumentPreviewProps) {
                 </tbody>
               </table>
 
-              <div style={{ 
+              <div data-pdf-section style={{ 
                 display: 'flex', justifyContent: 'space-between', alignItems: 'center',
                 marginTop: '12px', padding: '10px 16px',
                 backgroundColor: NAVY, borderRadius: '4px',
@@ -475,13 +480,13 @@ export default function DocumentPreview(props: DocumentPreviewProps) {
           ) : null}
 
           {totalAmount !== undefined && totalAmount > 0 && !isChallan && (
-            <div style={{ textAlign: 'right', padding: '0', fontSize: '11px', color: NAVY, marginTop: '4px' }}>
+            <div data-pdf-section style={{ textAlign: 'right', padding: '0', fontSize: '11px', color: NAVY, marginTop: '4px' }}>
               <strong>In Word :</strong> {props.amountInWords || numberToWords(isInvoice ? balance : subtotal)}.
             </div>
           )}
 
           {isInvoice && payments && payments.length > 0 && (
-            <div style={{ marginTop: '16px', position: 'relative', zIndex: 1 }}>
+            <div data-pdf-section style={{ marginTop: '16px', position: 'relative', zIndex: 1 }}>
               <div style={{ border: '1px solid #e0e0e0', borderRadius: '6px', overflow: 'hidden' }}>
                 <div style={{ padding: '8px 14px', backgroundColor: '#f9fafb', borderBottom: '1px solid #e0e0e0' }}>
                   <strong style={{ fontSize: '12px', color: NAVY }}>PAYMENT HISTORY</strong>
@@ -505,7 +510,7 @@ export default function DocumentPreview(props: DocumentPreviewProps) {
         </div>
 
         {notes && (
-          <div style={{ padding: '8px 35px', fontSize: '11px', color: '#666' }}>
+          <div data-pdf-section style={{ padding: '8px 35px', fontSize: '11px', color: '#666' }}>
             <strong>Notes:</strong> {notes}
           </div>
         )}
