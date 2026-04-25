@@ -111,9 +111,9 @@ export async function downloadDocument(docNumber: string) {
 
     const scale = 2;
     const [headerCanvas, footerCanvas, bodyCanvas] = await Promise.all([
-      html2canvas(headerEl, { scale, useCORS: true, logging: false, backgroundColor: '#ffffff' }),
-      html2canvas(footerEl, { scale, useCORS: true, logging: false, backgroundColor: '#ffffff' }),
-      html2canvas(bodyEl, { scale, useCORS: true, logging: false, backgroundColor: '#ffffff' }),
+      html2canvas(headerEl, { scale, useCORS: true, logging: false, backgroundColor: '#ffffff', height: headerEl.scrollHeight, windowHeight: headerEl.scrollHeight }),
+      html2canvas(footerEl, { scale, useCORS: true, logging: false, backgroundColor: '#ffffff', height: footerEl.scrollHeight, windowHeight: footerEl.scrollHeight }),
+      html2canvas(bodyEl, { scale, useCORS: true, logging: false, backgroundColor: '#ffffff', height: bodyEl.scrollHeight, windowHeight: bodyEl.scrollHeight }),
     ]);
 
     const pdf = new jsPDF('p', 'mm', 'a4');
@@ -156,11 +156,12 @@ export async function downloadDocument(docNumber: string) {
     // pixel position (within bodyCanvas) of every <tr> inside bodyEl. We can
     // only split the body image at one of these safe positions.
     const bodyRect = bodyEl.getBoundingClientRect();
-    const cssToCanvasY = bodyCanvas.height / bodyRect.height; // px(canvas) per px(css)
+    const cssBodyHeight = Math.max(bodyRect.height, bodyEl.scrollHeight);
+    const cssToCanvasY = bodyCanvas.height / cssBodyHeight; // px(canvas) per px(css)
     const safeCutsPx: number[] = [];
-    const rows = bodyEl.querySelectorAll('tr');
-    rows.forEach((tr) => {
-      const r = (tr as HTMLElement).getBoundingClientRect();
+    const safeSections = bodyEl.querySelectorAll('tr, [data-pdf-section]');
+    safeSections.forEach((section) => {
+      const r = (section as HTMLElement).getBoundingClientRect();
       const bottomCssRelative = r.bottom - bodyRect.top;
       const bottomCanvasPx = Math.round(bottomCssRelative * cssToCanvasY);
       if (bottomCanvasPx > 0 && bottomCanvasPx <= bodyCanvas.height) {
