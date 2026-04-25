@@ -465,7 +465,7 @@ export default function DocumentPreview(props: DocumentPreviewProps) {
                 </tbody>
               </table>
 
-              <div style={{ 
+              <div data-pdf-section style={{ 
                 display: 'flex', justifyContent: 'space-between', alignItems: 'center',
                 marginTop: '12px', padding: '10px 16px',
                 backgroundColor: NAVY, borderRadius: '4px',
@@ -478,13 +478,13 @@ export default function DocumentPreview(props: DocumentPreviewProps) {
           ) : null}
 
           {totalAmount !== undefined && totalAmount > 0 && !isChallan && (
-            <div style={{ textAlign: 'right', padding: '0', fontSize: '11px', color: NAVY, marginTop: '4px' }}>
+            <div data-pdf-section style={{ textAlign: 'right', padding: '0', fontSize: '11px', color: NAVY, marginTop: '4px' }}>
               <strong>In Word :</strong> {props.amountInWords || numberToWords(isInvoice ? balance : subtotal)}.
             </div>
           )}
 
           {isInvoice && payments && payments.length > 0 && (
-            <div style={{ marginTop: '16px', position: 'relative', zIndex: 1 }}>
+            <div data-pdf-section style={{ marginTop: '16px', position: 'relative', zIndex: 1 }}>
               <div style={{ border: '1px solid #e0e0e0', borderRadius: '6px', overflow: 'hidden' }}>
                 <div style={{ padding: '8px 14px', backgroundColor: '#f9fafb', borderBottom: '1px solid #e0e0e0' }}>
                   <strong style={{ fontSize: '12px', color: NAVY }}>PAYMENT HISTORY</strong>
@@ -508,7 +508,7 @@ export default function DocumentPreview(props: DocumentPreviewProps) {
         </div>
 
         {notes && (
-          <div style={{ padding: '8px 35px', fontSize: '11px', color: '#666' }}>
+          <div data-pdf-section style={{ padding: '8px 35px', fontSize: '11px', color: '#666' }}>
             <strong>Notes:</strong> {notes}
           </div>
         )}
