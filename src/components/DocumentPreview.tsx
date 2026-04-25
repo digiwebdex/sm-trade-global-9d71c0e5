@@ -144,9 +144,13 @@ export async function downloadDocument(docNumber: string) {
     // Convert per-page mm slice into source-pixel slice on bodyCanvas
     const pxPerMm = bodyCanvas.width / contentWidth;
     const sliceHeightPx = Math.floor(bodyAvailMm * pxPerMm);
+    const sliceHeightLastPx = Math.floor(bodyAvailLastMm * pxPerMm);
 
     const headerImg = headerCanvas.toDataURL('image/jpeg', 0.95);
     const footerImg = footerCanvas.toDataURL('image/jpeg', 0.95);
+
+    // Pre-determine if content fits on a single page (header+body+footer all together)
+    const fitsSinglePage = (headerHeightMm + bodyTotalHeightMm + footerHeightMm + topMargin + bottomMargin) <= pdfHeight + 1;
 
     let renderedPx = 0;
     let pageIndex = 0;
@@ -156,9 +160,11 @@ export async function downloadDocument(docNumber: string) {
       // Header on every page
       pdf.addImage(headerImg, 'JPEG', sideMargin, topMargin, contentWidth, headerHeightMm);
 
-      // Body slice
       const remainingPx = bodyCanvas.height - renderedPx;
-      const thisSlicePx = Math.min(sliceHeightPx, remainingPx);
+
+      // Tentatively try to fit remaining body on this page (with footer reserved)
+      const isLastPage = remainingPx <= sliceHeightLastPx;
+      const thisSlicePx = isLastPage ? remainingPx : Math.min(sliceHeightPx, remainingPx);
 
       const sliceCanvas = document.createElement('canvas');
       sliceCanvas.width = bodyCanvas.width;
@@ -173,12 +179,14 @@ export async function downloadDocument(docNumber: string) {
       const thisSliceMm = (thisSlicePx * contentWidth) / bodyCanvas.width;
       pdf.addImage(sliceImg, 'JPEG', sideMargin, topMargin + headerHeightMm, contentWidth, thisSliceMm);
 
-      // Footer on every page (always at fixed position from bottom respecting 0.5in margin)
-      const footerY = pdfHeight - bottomMargin - footerHeightMm;
-      pdf.addImage(footerImg, 'JPEG', sideMargin, footerY, contentWidth, footerHeightMm);
-
       renderedPx += thisSlicePx;
       pageIndex += 1;
+
+      // Footer ONLY on the last page
+      if (renderedPx >= bodyCanvas.height) {
+        const footerY = pdfHeight - bottomMargin - footerHeightMm;
+        pdf.addImage(footerImg, 'JPEG', sideMargin, footerY, contentWidth, footerHeightMm);
+      }
 
       // Safety cap
       if (pageIndex > 20) break;
