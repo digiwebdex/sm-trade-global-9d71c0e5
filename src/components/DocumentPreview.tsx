@@ -305,7 +305,11 @@ export default function DocumentPreview(props: DocumentPreviewProps) {
         </div>
 
         <div style={{ height: '2px', backgroundColor: '#999', margin: '0 35px' }} />
+        </div>
+        {/* ===== END HEADER ===== */}
 
+        {/* ===== BODY (slices across pages) ===== */}
+        <div className="doc-body-section" style={{ flex: 1 }}>
         <div style={{ padding: '14px 35px 10px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
           <div style={{ display: 'flex', alignItems: 'stretch' }}>
             <div style={{ width: '6px', backgroundColor: '#1f3b8a', borderRadius: '0px', marginRight: '12px', flexShrink: 0 }}></div>
