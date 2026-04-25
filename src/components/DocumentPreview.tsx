@@ -248,6 +248,8 @@ export async function downloadDocument(docNumber: string) {
     pdf.save(`${docNumber}.pdf`);
   } catch (err) {
     console.error('PDF download failed:', err);
+  } finally {
+    wrapper.style.overflow = previousWrapperOverflow;
   }
 }
 
