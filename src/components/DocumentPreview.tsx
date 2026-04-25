@@ -127,8 +127,10 @@ export async function downloadDocument(docNumber: string) {
     const footerHeightMm = (footerCanvas.height * contentWidth) / footerCanvas.width;
     const bodyTotalHeightMm = (bodyCanvas.height * contentWidth) / bodyCanvas.width;
 
-    // Available vertical space for body on each page
-    const bodyAvailMm = pdfHeight - topMargin - headerHeightMm - footerHeightMm - bottomMargin;
+    // Available vertical space for body on non-last pages (header repeats, footer reserved only at bottom margin)
+    const bodyAvailMm = pdfHeight - topMargin - headerHeightMm - bottomMargin;
+    // Last page must also fit the footer
+    const bodyAvailLastMm = pdfHeight - topMargin - headerHeightMm - footerHeightMm - bottomMargin;
     if (bodyAvailMm <= 20) {
       // Header+footer too tall, fall back to single-shot
       const canvas = await html2canvas(wrapper, { scale, useCORS: true, logging: false, backgroundColor: '#ffffff' });
