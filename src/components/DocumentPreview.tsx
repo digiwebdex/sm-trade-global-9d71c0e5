@@ -450,7 +450,11 @@ export default function DocumentPreview(props: DocumentPreviewProps) {
           </div>
         )}
 
-        <div style={{ marginTop: 'auto', breakInside: 'avoid', pageBreakInside: 'avoid' }}>
+        </div>
+        {/* ===== END BODY ===== */}
+
+        {/* ===== FOOTER (repeats on every page) ===== */}
+        <div className="doc-footer-section" style={{ marginTop: 'auto', breakInside: 'avoid', pageBreakInside: 'avoid' }}>
           <div style={{ padding: '10px 35px 8px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
             {[
               { label: 'Received by', sig: props.signatureReceived || settings.signatureReceived },
