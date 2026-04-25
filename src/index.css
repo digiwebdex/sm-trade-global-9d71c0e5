@@ -98,12 +98,12 @@
     display: table !important;
     width: 100% !important;
   }
-  /* Repeat header on every printed page (browser-supported via thead-like grouping) */
+  /* Repeat header on every printed page; footer flows normally so it appears only on the last page */
   .doc-header-section {
     display: table-header-group;
   }
   .doc-footer-section {
-    display: table-footer-group;
+    display: block;
   }
   .doc-body-section {
     display: table-row-group;
