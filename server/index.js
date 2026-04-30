@@ -1,14 +1,14 @@
 const express = require('express');
 const cors = require('cors');
 const { v4: uuidv4 } = require('uuid');
-const pool = require('./db');
 require('dotenv').config();
+const pool = require('./db');
 
 const app = express();
 app.use(cors());
 app.use(express.json({ limit: '10mb' }));
 
-const PORT = process.env.PORT || 3001;
+const PORT = Number(process.env.PORT || 3105);
 
 // ============ HEALTH ============
 // Lightweight check to verify which backend Nginx is proxying to.
