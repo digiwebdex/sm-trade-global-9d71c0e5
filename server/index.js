@@ -10,6 +10,18 @@ app.use(express.json({ limit: '10mb' }));
 
 const PORT = process.env.PORT || 3001;
 
+// ============ HEALTH ============
+// Lightweight check to verify which backend Nginx is proxying to.
+// Use after every deploy: curl -i http://localhost:3105/api/health
+app.get('/api/health', (req, res) => {
+  res.json({
+    ok: true,
+    app: 'smtrade-api',
+    port: PORT,
+    time: new Date().toISOString(),
+  });
+});
+
 // ============ AUTH ============
 app.post('/api/auth/login', async (req, res) => {
   try {
