@@ -31,16 +31,17 @@ export default function UsersPage() {
   if (!isAdmin) return <div className="p-8 text-center text-muted-foreground">Admin access required</div>;
 
   const handleSave = async () => {
-    if (!form.username || !form.name) { toast.error('Username and name are required'); return; }
+    const cleanForm = { ...form, username: form.username.trim(), name: form.name.trim(), email: form.email.trim() };
+    if (!cleanForm.username || !cleanForm.name) { toast.error('Username and name are required'); return; }
     try {
       if (editing) {
-        const updates: any = { ...form };
+        const updates: any = { ...cleanForm };
         if (!updates.password) delete updates.password;
         await api.updateUser(editing.id, updates);
         toast.success('User updated');
       } else {
-        if (!form.password) { toast.error('Password is required'); return; }
-        await api.createUser(form);
+        if (!cleanForm.password) { toast.error('Password is required'); return; }
+        await api.createUser(cleanForm);
         toast.success('User added');
       }
       setForm(emptyUser);
