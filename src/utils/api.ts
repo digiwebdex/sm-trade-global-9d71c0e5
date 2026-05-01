@@ -16,8 +16,8 @@ async function request<T>(endpoint: string, options?: RequestInit): Promise<T> {
 
 export const api = {
   // Auth
-  login: (username: string, password: string) =>
-    request('/auth/login', { method: 'POST', body: JSON.stringify({ username, password }) }),
+  login: (email: string, password: string) =>
+    request('/auth/login', { method: 'POST', body: JSON.stringify({ email, password }) }),
 
   // Users
   getUsers: () => request('/users'),
