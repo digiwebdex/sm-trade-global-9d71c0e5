@@ -3,7 +3,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import {
   LayoutDashboard, Users, Package, FileText, FilePlus, Truck, ShoppingCart,
-  Settings, LogOut, UserCog, Menu
+  Settings, LogOut, UserCog, Menu, Database
 } from 'lucide-react';
 import { NavLink } from '@/components/NavLink';
 import {
@@ -25,6 +25,7 @@ const navItems = [
 const adminItems = [
   { title: 'User Management', url: '/users', icon: UserCog },
   { title: 'Company Settings', url: '/settings', icon: Settings },
+  { title: 'Backups', url: '/backups', icon: Database },
 ];
 
 function AppSidebarContent() {
