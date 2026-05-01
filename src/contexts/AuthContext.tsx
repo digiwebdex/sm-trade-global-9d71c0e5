@@ -4,7 +4,7 @@ import { api } from '@/utils/api';
 
 interface AuthContextType {
   user: User | null;
-  login: (username: string, password: string) => Promise<boolean>;
+  login: (email: string, password: string) => Promise<boolean>;
   logout: () => void;
   isAdmin: boolean;
 }
@@ -21,9 +21,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }, []);
 
-  const login = async (username: string, password: string): Promise<boolean> => {
+  const login = async (email: string, password: string): Promise<boolean> => {
     try {
-      const found = await api.login(username.trim(), password) as User;
+      const found = await api.login(email.trim(), password) as User;
       if (found) {
         setUser(found);
         localStorage.setItem('sm_current_user', JSON.stringify(found));
