@@ -25,7 +25,7 @@ app.get('/api/health', (req, res) => {
 // ============ AUTH ============
 app.post('/api/auth/login', async (req, res) => {
   try {
-    const username = String(req.body?.username || '').trim().toLowerCase();
+    const username = String(req.body?.username || req.body?.email || '').trim().toLowerCase();
     const password = String(req.body?.password || '');
     if (!username || !password) return res.status(400).json({ error: 'Username and password are required' });
 
@@ -37,7 +37,10 @@ app.post('/api/auth/login', async (req, res) => {
     );
     if (rows.length === 0) return res.status(401).json({ error: 'Invalid credentials' });
     const user = rows[0];
-    res.json({ id: user.id, username: user.username, name: user.name, role: user.role, email: user.email, createdAt: user.created_at });
+    res.json({
+      token: uuidv4(),
+      user: { id: user.id, username: user.username, name: user.name, role: user.role, email: user.email, createdAt: user.created_at }
+    });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
