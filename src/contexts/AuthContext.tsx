@@ -25,10 +25,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const login = async (email: string, password: string): Promise<boolean> => {
     try {
       const response = await api.login(email.trim(), password) as any;
-      if (response?.token && response?.user) {
-        localStorage.setItem('sm_auth_token', response.token);
-        localStorage.setItem('sm_current_user', JSON.stringify(response.user));
-        setUser(response.user);
+      const loggedInUser = response?.user || (response?.id ? response : null);
+      if (loggedInUser) {
+        localStorage.setItem('sm_auth_token', response?.token || `sm-local-${loggedInUser.id}`);
+        localStorage.setItem('sm_current_user', JSON.stringify(loggedInUser));
+        setUser(loggedInUser);
         return true;
       }
       return false;
