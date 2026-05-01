@@ -25,8 +25,16 @@ app.get('/api/health', (req, res) => {
 // ============ AUTH ============
 app.post('/api/auth/login', async (req, res) => {
   try {
-    const { username, password } = req.body;
-    const [rows] = await pool.query('SELECT * FROM users WHERE username = ? AND password = ?', [username, password]);
+    const username = String(req.body?.username || '').trim().toLowerCase();
+    const password = String(req.body?.password || '');
+    if (!username || !password) return res.status(400).json({ error: 'Username and password are required' });
+
+    const [rows] = await pool.query(
+      `SELECT * FROM users
+       WHERE (LOWER(TRIM(username)) = ? OR LOWER(TRIM(email)) = ?)
+         AND password = ?`,
+      [username, username, password]
+    );
     if (rows.length === 0) return res.status(401).json({ error: 'Invalid credentials' });
     const user = rows[0];
     res.json({ id: user.id, username: user.username, name: user.name, role: user.role, email: user.email, createdAt: user.created_at });
@@ -45,7 +53,12 @@ app.get('/api/users', async (req, res) => {
 
 app.post('/api/users', async (req, res) => {
   try {
-    const { username, password, name, role, email } = req.body;
+    const username = String(req.body?.username || '').trim();
+    const password = String(req.body?.password || '');
+    const name = String(req.body?.name || '').trim();
+    const role = req.body?.role;
+    const email = String(req.body?.email || '').trim();
+    if (!username || !password || !name) return res.status(400).json({ error: 'Username, password and name are required' });
     const id = uuidv4();
     await pool.query('INSERT INTO users (id, username, password, name, role, email) VALUES (?, ?, ?, ?, ?, ?)', [id, username, password, name, role || 'staff', email]);
     res.json({ id, username, password, name, role: role || 'staff', email, createdAt: new Date().toISOString() });
@@ -54,9 +67,19 @@ app.post('/api/users', async (req, res) => {
 
 app.put('/api/users/:id', async (req, res) => {
   try {
-    const { username, password, name, role, email } = req.body;
-    await pool.query('UPDATE users SET username=?, password=?, name=?, role=?, email=? WHERE id=?', [username, password, name, role, email, req.params.id]);
-    res.json({ id: req.params.id, ...req.body });
+    const username = String(req.body?.username || '').trim();
+    const name = String(req.body?.name || '').trim();
+    const role = req.body?.role || 'staff';
+    const email = String(req.body?.email || '').trim();
+    const password = typeof req.body?.password === 'string' ? req.body.password : '';
+    if (!username || !name) return res.status(400).json({ error: 'Username and name are required' });
+
+    if (password) {
+      await pool.query('UPDATE users SET username=?, password=?, name=?, role=?, email=? WHERE id=?', [username, password, name, role, email, req.params.id]);
+    } else {
+      await pool.query('UPDATE users SET username=?, name=?, role=?, email=? WHERE id=?', [username, name, role, email, req.params.id]);
+    }
+    res.json({ id: req.params.id, username, name, role, email });
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
