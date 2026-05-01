@@ -40,6 +40,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const logout = () => {
     setUser(null);
     localStorage.removeItem('sm_current_user');
+    localStorage.removeItem('sm_auth_token');
   };
 
   return (
