@@ -16,17 +16,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     const saved = localStorage.getItem('sm_current_user');
-    if (saved) {
+    const token = localStorage.getItem('sm_auth_token');
+    if (saved && token) {
       try { setUser(JSON.parse(saved)); } catch { /* ignore */ }
     }
   }, []);
 
   const login = async (email: string, password: string): Promise<boolean> => {
     try {
-      const found = await api.login(email.trim(), password) as User;
-      if (found) {
-        setUser(found);
-        localStorage.setItem('sm_current_user', JSON.stringify(found));
+      const response = await api.login(email.trim(), password) as any;
+      if (response?.token && response?.user) {
+        localStorage.setItem('sm_auth_token', response.token);
+        localStorage.setItem('sm_current_user', JSON.stringify(response.user));
+        setUser(response.user);
         return true;
       }
       return false;
