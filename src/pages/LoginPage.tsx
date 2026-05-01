@@ -8,7 +8,7 @@ import { toast } from 'sonner';
 import { Lock, User } from 'lucide-react';
 
 export default function LoginPage() {
-  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const { login } = useAuth();
   const navigate = useNavigate();
@@ -19,7 +19,7 @@ export default function LoginPage() {
     e.preventDefault();
     setLoading(true);
     try {
-      const success = await login(username, password);
+      const success = await login(email, password);
       if (success) {
         toast.success('Login successful!');
         navigate('/dashboard');
@@ -50,9 +50,9 @@ export default function LoginPage() {
               <div className="relative">
                 <User className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                 <Input
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                  placeholder="Enter username"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="Enter email"
                   className="pl-10"
                   required
                 />
