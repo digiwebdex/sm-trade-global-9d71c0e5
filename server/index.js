@@ -11,9 +11,11 @@ app.use(express.json({ limit: '10mb' }));
 const PORT = Number(process.env.PORT || 3105);
 
 // Support an isolated API prefix for this app on shared VPS domains.
-// Nginx can proxy /smtrade-api/ here without colliding with other /api routes.
-app.use('/smtrade-api', (req, _res, next) => {
-  req.url = `/api${req.url}`;
+// Requests to /smtrade-api/* are handled by the same routes as /api/*.
+app.use((req, _res, next) => {
+  if (req.url.startsWith('/smtrade-api/')) {
+    req.url = req.url.replace('/smtrade-api/', '/api/');
+  }
   next();
 });
 
