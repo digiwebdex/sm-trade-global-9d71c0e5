@@ -7,6 +7,17 @@ import { api } from '@/utils/api';
 import { formatBDT } from '@/lib/utils';
 import { Invoice, Quotation, Challan, PurchaseOrder, Customer, Product } from '@/types';
 
+type DashboardStats = {
+  customerCount: number;
+  invoiceCount: number;
+  quotationCount: number;
+  challanCount: number;
+  poCount: number;
+  productCount: number;
+  paidInvoiceCount: number;
+  totalRevenue: number;
+};
+
 export default function DashboardPage() {
   const navigate = useNavigate();
   const [invoices, setInvoices] = useState<Invoice[]>([]);
@@ -15,9 +26,11 @@ export default function DashboardPage() {
   const [purchaseOrders, setPurchaseOrders] = useState<PurchaseOrder[]>([]);
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
+  const [serverStats, setServerStats] = useState<DashboardStats | null>(null);
 
   useEffect(() => {
     Promise.all([
+      api.getDashboardStats().then((d: any) => setServerStats(d)).catch(() => {}),
       api.getInvoices().then((d: any) => setInvoices(d)).catch(() => {}),
       api.getQuotations().then((d: any) => setQuotations(d)).catch(() => {}),
       api.getChallans().then((d: any) => setChallans(d)).catch(() => {}),
@@ -27,13 +40,13 @@ export default function DashboardPage() {
     ]);
   }, []);
 
-  const totalRevenue = invoices.reduce((sum, inv) => sum + inv.totalAmount, 0);
-  const paidInvoices = invoices.filter(i => i.status === 'paid').length;
+  const totalRevenue = serverStats?.totalRevenue ?? invoices.reduce((sum, inv) => sum + Number(inv.totalAmount || 0), 0);
+  const paidInvoices = serverStats?.paidInvoiceCount ?? invoices.filter(i => i.status === 'paid').length;
 
   const stats = [
-    { title: 'Total Invoices', value: invoices.length, icon: FileText, color: 'bg-primary' },
-    { title: 'Quotations', value: quotations.length, icon: FilePlus, color: 'bg-secondary' },
-    { title: 'Challans', value: challans.length, icon: Truck, color: 'bg-info' },
+    { title: 'Total Invoices', value: serverStats?.invoiceCount ?? invoices.length, icon: FileText, color: 'bg-primary' },
+    { title: 'Quotations', value: serverStats?.quotationCount ?? quotations.length, icon: FilePlus, color: 'bg-secondary' },
+    { title: 'Challans', value: serverStats?.challanCount ?? challans.length, icon: Truck, color: 'bg-info' },
     { title: 'Revenue', value: `৳${formatBDT(totalRevenue)}`, icon: DollarSign, color: 'bg-success' },
   ];
 
@@ -133,11 +146,11 @@ export default function DashboardPage() {
             <div className="space-y-3">
               <div className="flex justify-between items-center">
                 <span className="text-sm text-muted-foreground flex items-center gap-2"><Users className="h-4 w-4" /> Customers</span>
-                <span className="font-medium">{customers.length}</span>
+                <span className="font-medium">{serverStats?.customerCount ?? customers.length}</span>
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-sm text-muted-foreground flex items-center gap-2"><Package className="h-4 w-4" /> Products</span>
-                <span className="font-medium">{products.length}</span>
+                <span className="font-medium">{serverStats?.productCount ?? products.length}</span>
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-sm text-muted-foreground flex items-center gap-2"><TrendingUp className="h-4 w-4" /> Paid Invoices</span>
@@ -145,7 +158,7 @@ export default function DashboardPage() {
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-sm text-muted-foreground flex items-center gap-2"><ShoppingCart className="h-4 w-4" /> Purchase Orders</span>
-                <span className="font-medium">{purchaseOrders.length}</span>
+                <span className="font-medium">{serverStats?.poCount ?? purchaseOrders.length}</span>
               </div>
             </div>
           </CardContent>
