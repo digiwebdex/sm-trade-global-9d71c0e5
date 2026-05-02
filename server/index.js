@@ -542,8 +542,10 @@ app.get('/api/dashboard/stats', async (req, res) => {
     const [[{ quotationCount }]] = await pool.query('SELECT COUNT(*) as quotationCount FROM quotations');
     const [[{ challanCount }]] = await pool.query('SELECT COUNT(*) as challanCount FROM challans');
     const [[{ poCount }]] = await pool.query('SELECT COUNT(*) as poCount FROM purchase_orders');
+    const [[{ productCount }]] = await pool.query('SELECT COUNT(*) as productCount FROM products');
+    const [[{ paidInvoiceCount }]] = await pool.query('SELECT COUNT(*) as paidInvoiceCount FROM invoices WHERE status = "paid"');
     const [[{ totalRevenue }]] = await pool.query('SELECT COALESCE(SUM(total_amount), 0) as totalRevenue FROM invoices WHERE status IN ("paid", "partial")');
-    res.json({ customerCount, invoiceCount, quotationCount, challanCount, poCount, totalRevenue });
+    res.json({ customerCount, invoiceCount, quotationCount, challanCount, poCount, productCount, paidInvoiceCount, totalRevenue });
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
