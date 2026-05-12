@@ -55,6 +55,32 @@ app.post('/api/auth/login', async (req, res) => {
   }
 });
 
+app.post('/api/auth/change-password', async (req, res) => {
+  try {
+    const userId = String(req.body?.userId || '').trim();
+    const currentPassword = String(req.body?.currentPassword || '');
+    const newPassword = String(req.body?.newPassword || '');
+    if (!userId || !currentPassword || !newPassword) {
+      return res.status(400).json({ error: 'User ID, current password and new password are required' });
+    }
+    if (newPassword.length < 6) {
+      return res.status(400).json({ error: 'New password must be at least 6 characters' });
+    }
+    if (newPassword === currentPassword) {
+      return res.status(400).json({ error: 'New password must differ from current password' });
+    }
+    const [rows] = await pool.query('SELECT id, password FROM users WHERE id = ?', [userId]);
+    if (rows.length === 0) return res.status(404).json({ error: 'User not found' });
+    if (rows[0].password !== currentPassword) {
+      return res.status(401).json({ error: 'Current password is incorrect' });
+    }
+    await pool.query('UPDATE users SET password = ? WHERE id = ?', [newPassword, userId]);
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // ============ USERS ============
 app.get('/api/users', async (req, res) => {
   try {
