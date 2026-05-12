@@ -7,7 +7,74 @@ import { api } from '@/utils/api';
 import { CompanySettings } from '@/types';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
-import { Save, Upload, X } from 'lucide-react';
+import { Save, Upload, X, KeyRound, Eye, EyeOff } from 'lucide-react';
+
+function ChangePasswordCard() {
+  const { user } = useAuth();
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [showCurrent, setShowCurrent] = useState(false);
+  const [showNew, setShowNew] = useState(false);
+  const [saving, setSaving] = useState(false);
+
+  const handleSubmit = async () => {
+    if (!user?.id) { toast.error('Not signed in'); return; }
+    if (!currentPassword || !newPassword || !confirmPassword) {
+      toast.error('All password fields are required'); return;
+    }
+    if (newPassword.length < 6) { toast.error('New password must be at least 6 characters'); return; }
+    if (newPassword !== confirmPassword) { toast.error('New passwords do not match'); return; }
+    if (newPassword === currentPassword) { toast.error('New password must differ from current password'); return; }
+    setSaving(true);
+    try {
+      await api.changePassword(user.id, currentPassword, newPassword);
+      toast.success('Password updated successfully');
+      setCurrentPassword(''); setNewPassword(''); setConfirmPassword('');
+    } catch (err: any) {
+      toast.error(err?.message || 'Failed to update password');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2"><KeyRound className="h-5 w-5" /> Change Password</CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <p className="text-sm text-muted-foreground">Update the password for <span className="font-medium text-foreground">{user?.email || user?.username}</span>.</p>
+        <div>
+          <label className="text-sm font-medium">Current Password</label>
+          <div className="relative">
+            <Input type={showCurrent ? 'text' : 'password'} value={currentPassword} onChange={(e) => setCurrentPassword(e.target.value)} autoComplete="current-password" />
+            <button type="button" onClick={() => setShowCurrent(s => !s)} className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground">
+              {showCurrent ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+            </button>
+          </div>
+        </div>
+        <div>
+          <label className="text-sm font-medium">New Password</label>
+          <div className="relative">
+            <Input type={showNew ? 'text' : 'password'} value={newPassword} onChange={(e) => setNewPassword(e.target.value)} autoComplete="new-password" />
+            <button type="button" onClick={() => setShowNew(s => !s)} className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground">
+              {showNew ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+            </button>
+          </div>
+          <p className="text-xs text-muted-foreground mt-1">Minimum 6 characters.</p>
+        </div>
+        <div>
+          <label className="text-sm font-medium">Confirm New Password</label>
+          <Input type={showNew ? 'text' : 'password'} value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} autoComplete="new-password" />
+        </div>
+        <Button onClick={handleSubmit} disabled={saving} className="bg-secondary hover:bg-secondary/90">
+          <KeyRound className="h-4 w-4 mr-2" /> {saving ? 'Updating...' : 'Update Password'}
+        </Button>
+      </CardContent>
+    </Card>
+  );
+}
 
 function SignatureUpload({ label, value, onChange }: { label: string; value?: string; onChange: (val: string) => void }) {
   const inputRef = useRef<HTMLInputElement>(null);
