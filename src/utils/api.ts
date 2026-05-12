@@ -25,6 +25,8 @@ export const api = {
   // Auth
   login: (email: string, password: string) =>
     request('/auth/login', { method: 'POST', body: JSON.stringify({ username: email, email, password }) }),
+  changePassword: (userId: string, currentPassword: string, newPassword: string) =>
+    request('/auth/change-password', { method: 'POST', body: JSON.stringify({ userId, currentPassword, newPassword }) }),
 
   // Users
   getUsers: () => request('/users'),
