@@ -175,6 +175,7 @@ export default function SettingsPage() {
       </div>
 
       <Button onClick={handleSave} className="bg-secondary hover:bg-secondary/90"><Save className="h-4 w-4 mr-2" /> Save Settings</Button>
+      </>)}
     </div>
   );
 }
