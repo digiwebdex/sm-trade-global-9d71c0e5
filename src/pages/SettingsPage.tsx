@@ -130,8 +130,6 @@ export default function SettingsPage() {
     }).catch(() => {});
   }, []);
 
-  if (!isAdmin) return <div className="p-8 text-center text-muted-foreground">Admin access required</div>;
-
   const handleSave = async () => {
     try {
       await api.updateSettings(settings);
@@ -142,9 +140,13 @@ export default function SettingsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold text-foreground">Company Settings</h1>
-        <p className="text-muted-foreground">Configure your company details for documents</p>
+        <h1 className="text-3xl font-bold text-foreground">Settings</h1>
+        <p className="text-muted-foreground">Manage your account and company configuration</p>
       </div>
+
+      <ChangePasswordCard />
+
+      {!isAdmin ? null : (<>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card>
