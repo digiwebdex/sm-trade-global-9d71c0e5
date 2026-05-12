@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { toast } from 'sonner';
 import { Lock, User } from 'lucide-react';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -14,6 +15,8 @@ export default function LoginPage() {
   const navigate = useNavigate();
 
   const [loading, setLoading] = useState(false);
+  const [forgotOpen, setForgotOpen] = useState(false);
+  const [forgotEmail, setForgotEmail] = useState('');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -75,9 +78,61 @@ export default function LoginPage() {
             <Button type="submit" disabled={loading} className="w-full bg-secondary hover:bg-secondary/90 text-secondary-foreground">
               {loading ? 'Signing in...' : 'Sign In'}
             </Button>
+            <div className="text-center">
+              <button
+                type="button"
+                onClick={() => { setForgotEmail(email); setForgotOpen(true); }}
+                className="text-sm text-primary hover:underline"
+              >
+                Forgot password?
+              </button>
+            </div>
           </form>
         </CardContent>
       </Card>
+
+      <Dialog open={forgotOpen} onOpenChange={setForgotOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Forgot Password</DialogTitle>
+            <DialogDescription>
+              Please contact your system administrator to reset your password.
+              Provide your registered email below and the admin will reset it from the Users panel.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-2">
+            <label className="text-sm font-medium">Your registered email</label>
+            <Input
+              type="email"
+              value={forgotEmail}
+              onChange={(e) => setForgotEmail(e.target.value)}
+              placeholder="you@example.com"
+            />
+            <p className="text-xs text-muted-foreground">
+              Admin contact: <span className="font-medium">admin@smtradeint.com</span>
+            </p>
+          </div>
+          <DialogFooter>
+            <Button
+              type="button"
+              onClick={() => {
+                if (!forgotEmail.trim()) {
+                  toast.error('Please enter your email');
+                  return;
+                }
+                const subject = encodeURIComponent('Password Reset Request');
+                const body = encodeURIComponent(`Please reset the password for: ${forgotEmail.trim()}`);
+                window.location.href = `mailto:admin@smtradeint.com?subject=${subject}&body=${body}`;
+                setForgotOpen(false);
+                toast.success('Opening email to admin...');
+              }}
+              className="bg-secondary hover:bg-secondary/90 text-secondary-foreground"
+            >
+              Send Request
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
