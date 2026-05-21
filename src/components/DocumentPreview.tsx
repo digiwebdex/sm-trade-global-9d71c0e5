@@ -547,7 +547,7 @@ export default function DocumentPreview(props: DocumentPreviewProps) {
               <div style={{ textAlign: 'center', lineHeight: '1.6', flex: 1, paddingRight: '100px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '16px', marginBottom: '2px' }}>
                   <span style={{ color: '#1a73e8' }}>✉ info@smtradeint.com</span>
-                  <span style={{ color: '#1a73e8', display: 'inline-flex', alignItems: 'center', gap: '2px' }}><svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#1a73e8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg> smtradeint.com</span>
+                  <span style={{ color: '#1a73e8', display: 'inline-flex', alignItems: 'center', gap: '4px', lineHeight: 1 }}><svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#1a73e8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ display: 'block', flexShrink: 0 }}><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg><span>smtradeint.com</span></span>
                 </div>
                 <div style={{ marginBottom: '2px' }}>
                   ◉ Address : House # 7, Road # 19/A, Sector # 4, Uttara, Dhaka-1230
